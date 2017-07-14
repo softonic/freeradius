@@ -1,0 +1,89 @@
+ldap {
+        server = 'XXX-FREERADIUS_LDAP_SERVER-XXX'
+        port = XXX-FREERADIUS_LDAP_PORT-XXX
+        identity = 'XXX-FREERADIUS_LDAP_IDENTITY-XXX'
+        password = 'XXX-FREERADIUS_LDAP_PASSWORD-XXX'
+        base_dn = 'XXX-FREERADIUS_LDAP_BASE_DN-XXX'
+        sasl {
+        }
+        update {
+                control:Password-With-Header    += 'userPassword'
+        }
+        user {
+                base_dn = "${..base_dn}"
+                filter = "(sAMAccountName=%{%{Stripped-User-Name}:-%{User-Name}})"
+                sasl {
+                }
+        }
+        group {
+                base_dn = "${..base_dn}"
+                filter = '(objectClass=posixGroup)'
+                membership_attribute = 'memberOf'
+        }
+        profile {
+        }
+        client {
+                base_dn = "${..base_dn}"
+                filter = '(objectClass=radiusClient)'
+                template {
+                }
+                attribute {
+                        ipaddr                          = 'radiusClientIdentifier'
+                        secret                          = 'radiusClientSecret'
+                }
+        }
+        accounting {
+                reference = "%{tolower:type.%{Acct-Status-Type}}"
+                type {
+                        start {
+                                update {
+                                        description := "Online at %S"
+                                }
+                        }
+                        interim-update {
+                                update {
+                                        description := "Last seen at %S"
+                                }
+                        }
+                        stop {
+                                update {
+                                        description := "Offline at %S"
+                                }
+                        }
+                }
+        }
+        post-auth {
+                update {
+                        description := "Authenticated at %S"
+                }
+        }
+        options {
+                chase_referrals = yes
+                rebind = yes
+                use_referral_credentials = no
+                res_timeout = 10
+                srv_timelimit = 3
+                idle = 60
+                probes = 3
+                interval = 3
+                ldap_debug = 0x0028
+        }
+        tls {
+                start_tls = no
+                ca_file = 
+                certificate_file = 
+                private_key_file = 
+                require_cert    = 'allow'
+        }
+        pool {
+                start = ${thread[pool].start_servers}
+                min = ${thread[pool].min_spare_servers}
+                max = ${thread[pool].max_servers}
+                spare = ${thread[pool].max_spare_servers}
+                uses = 0
+                retry_delay = 30
+                lifetime = 0
+                idle_timeout = 60
+                connect_timeout = 3.0
+        }
+}
