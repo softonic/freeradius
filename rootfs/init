@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#######################################
+# Configure kerberos file #
+#######################################
+
 KRB5_CONFIG_FILE='/etc/krb5.conf'
 
 FREERADIUS_KDC_IP="${FREERADIUS_KDC_IP:-127.0.0.1}" && \
@@ -13,5 +17,45 @@ sed -i "s#XXX-FREERADIUS_KDC_DOMAIN-XXX#${FREERADIUS_KDC_DOMAIN}#g" ${KRB5_CONFI
 
 FREERADIUS_KDC_DOMAIN_REALM="${FREERADIUS_KDC_DOMAIN_REALM:-example.com}" && \
 sed -i "s#XXX-FREERADIUS_KDC_DOMAIN_REALM-XXX#${FREERADIUS_KDC_DOMAIN_REALM}#g" ${KRB5_CONFIG_FILE}
+
+
+#######################################
+# Configure Ldap Module for FreeRadius#
+#######################################
+
+LDAP_CONFIG_FILE='/etc/raddb/mods-enabled/ldap'
+
+FREERADIUS_LDAP_SERVER="${FREERADIUS_LDAP_SERVER:-ldap.your.domain}" && \
+sed -i "s#XXX-FREERADIUS_LDAP_SERVER-XXX#${FREERADIUS_LDAP_SERVER}#g" ${LDAP_CONFIG_FILE}
+
+FREERADIUS_LDAP_PORT="${FREERADIUS_LDAP_PORT:-389}" && \
+sed -i "s#XXX-FREERADIUS_LDAP_PORT-XXX#${FREERADIUS_LDAP_PORT}#g" ${LDAP_CONFIG_FILE}
+
+FREERADIUS_LDAP_IDENTITY="${FREERADIUS_LDAP_IDENTITY:-cn=admin,o=My Org,c=UA}" && \
+sed -i "s#XXX-FREERADIUS_LDAP_IDENTITY-XXX#${FREERADIUS_LDAP_IDENTITY}#g" ${LDAP_CONFIG_FILE}
+
+FREERADIUS_LDAP_PASSWORD="${FREERADIUS_LDAP_PASSWORD:-mypass}" && \
+sed -i "s#XXX-FREERADIUS_LDAP_PASSWORD-XXX#${FREERADIUS_LDAP_PASSWORD}#g" ${LDAP_CONFIG_FILE}
+
+FREERADIUS_LDAP_BASE_DN="${FREERADIUS_LDAP_BASE_DN:-o=My Org,c=UA}" && \
+sed -i "s#FREERADIUS_LDAP_BASE_DN-XXX#${FREERADIUS_LDAP_BASE_DN}#g" ${LDAP_CONFIG_FILE}
+
+
+
+########################
+# Configure Samba File #
+########################
+
+SMB_CONFIG_FILE='/etc/samba/smb.conf'
+
+FREERADIUS_SMB_WORKGROUP="${FREERADIUS_SMB_WORKGROUP:-WORKGROUP}" && \
+sed -i "s#XXX-FREERADIUS_SMB_WORKGROUP-XXX#${FREERADIUS_SMB_WORKGROUP}#g" ${SMB_CONFIG_FILE}
+
+FREERADIUS_SMB_REALM="${FREERADIUS_SMB_REALM:-EXAMPLE.COM}" && \
+sed -i "s#FREERADIUS_SMB_REALM-XXX#${FREERADIUS_SMB_REALM}#g" ${SMB_CONFIG_FILE}
+
+#######
+# Run #
+#######
 
 radiusd -xx -f
