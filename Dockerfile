@@ -1,6 +1,6 @@
-FROM alpine:3.6
+FROM centos:7
 
-RUN apk --no-cache add -U freeradius freeradius-ldap freeradius-krb5 openldap-clients samba samba-winbind
+RUN yum install openldap-clients openldap-servers freeradius-ldap freeradius-utils freeradius freeradius-krb5 samba -y
 
 ADD rootfs /
 
