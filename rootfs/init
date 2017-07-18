@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 #######################################
 # Configure kerberos file #
 #######################################
@@ -23,7 +24,7 @@ sed -i "s#XXX-FREERADIUS_KDC_DOMAIN_REALM-XXX#${FREERADIUS_KDC_DOMAIN_REALM}#g" 
 # Configure Ldap Module for FreeRadius#
 #######################################
 
-LDAP_CONFIG_FILE='/etc/raddb/mods-enabled/ldap'
+LDAP_CONFIG_FILE='/etc/freeradius/mods-available/ldap'
 
 FREERADIUS_LDAP_SERVER="${FREERADIUS_LDAP_SERVER:-ldap.your.domain}" && \
 sed -i "s#XXX-FREERADIUS_LDAP_SERVER-XXX#${FREERADIUS_LDAP_SERVER}#g" ${LDAP_CONFIG_FILE}
@@ -38,9 +39,9 @@ FREERADIUS_LDAP_PASSWORD="${FREERADIUS_LDAP_PASSWORD:-mypass}" && \
 sed -i "s#XXX-FREERADIUS_LDAP_PASSWORD-XXX#${FREERADIUS_LDAP_PASSWORD}#g" ${LDAP_CONFIG_FILE}
 
 FREERADIUS_LDAP_BASE_DN="${FREERADIUS_LDAP_BASE_DN:-o=My Org,c=UA}" && \
-sed -i "s#FREERADIUS_LDAP_BASE_DN-XXX#${FREERADIUS_LDAP_BASE_DN}#g" ${LDAP_CONFIG_FILE}
+sed -i "s#XXX-FREERADIUS_LDAP_BASE_DN-XXX#${FREERADIUS_LDAP_BASE_DN}#g" ${LDAP_CONFIG_FILE}
 
-
+ln -s /etc/freeradius/mods-available/ldap /etc/freeradius/mods-enabled/
 
 ########################
 # Configure Samba File #
@@ -52,10 +53,25 @@ FREERADIUS_SMB_WORKGROUP="${FREERADIUS_SMB_WORKGROUP:-WORKGROUP}" && \
 sed -i "s#XXX-FREERADIUS_SMB_WORKGROUP-XXX#${FREERADIUS_SMB_WORKGROUP}#g" ${SMB_CONFIG_FILE}
 
 FREERADIUS_SMB_REALM="${FREERADIUS_SMB_REALM:-EXAMPLE.COM}" && \
-sed -i "s#FREERADIUS_SMB_REALM-XXX#${FREERADIUS_SMB_REALM}#g" ${SMB_CONFIG_FILE}
+sed -i "s#XXX-FREERADIUS_SMB_REALM-XXX#${FREERADIUS_SMB_REALM}#g" ${SMB_CONFIG_FILE}
+
+###############################
+# Configure Clients.conf File #
+###############################
+
+CLIENTS_CONFIG_FILE='/etc/freeradius/clients.conf'
+
+FREERADIUS_CLIENT_FW="${FREERADIUS_CLIENT_FW:-example}" && \
+sed -i "s#XXX-FREERADIUS_CLIENT_FW-XXX#${FREERADIUS_CLIENT_FW}#g" ${CLIENTS_CONFIG_FILE}
+
+FREERADIUS_CLIENT_IP="${FREERADIUS_CLIENT_IP:-10.0.0.1}" && \
+sed -i "s#XXX-FREERADIUS_CLIENT_IP-XXX#${FREERADIUS_CLIENT_IP}#g" ${CLIENTS_CONFIG_FILE}
+
+FREERADIUS_CLIENT_PASS="${FREERADIUS_CLIENT_PASS:-Secret}" && \
+sed -i "s#XXX-FREERADIUS_CLIENT_PASS-XXX#${FREERADIUS_CLIENT_PASS}#g" ${CLIENTS_CONFIG_FILE}
 
 #######
 # Run #
 #######
 
-radiusd -xx -f
+exec freeradius -xx -f
